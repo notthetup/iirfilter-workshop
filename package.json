@@ -1,0 +1,28 @@
+{
+  "name": "iirfilter-workshop",
+  "version": "1.0.0",
+  "description": "tools for making iirfilters",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/notthetup/iirfilter-workshop.git"
+  },
+  "keywords": [
+    "iir",
+    "filter",
+    "iirfilter",
+    "dsp",
+    "signal",
+    "processing",
+    "webaudio"
+  ],
+  "author": "Chinmay Pendharkar",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/notthetup/iirfilter-workshop/issues"
+  },
+  "homepage": "https://github.com/notthetup/iirfilter-workshop#readme"
+}
