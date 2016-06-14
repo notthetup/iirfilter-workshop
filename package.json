@@ -5,7 +5,7 @@
   "main": "script.js",
   "scripts": {
     "test": "npm run build",
-    "build": "browserify script.js > bundle.js && http-server"
+    "build": "budo script.js:bundle.js --live --open"
   },
   "repository": {
     "type": "git",
@@ -28,9 +28,10 @@
   "homepage": "https://github.com/notthetup/iirfilter-workshop#readme",
   "devDependencies": {
     "browserify": "^13.0.1",
+    "budo": "^8.3.0",
     "chart.js": "^2.1.5",
-    "horner": "^1.0.0",
-    "ndarray": "^1.0.18",
-    "ndarray-complex": "^1.0.3"
+    "ndarray-complex": "^1.0.3",
+    "ndarray-freqz": "^1.0.0",
+    "zeros": "^1.0.0"
   }
 }
