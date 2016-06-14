@@ -10694,7 +10694,7 @@ function generateCWiseOp(proc, typesig) {
 }
 module.exports = generateCWiseOp
 
-},{"uniq":58}],45:[function(require,module,exports){
+},{"uniq":59}],45:[function(require,module,exports){
 "use strict"
 
 // The function below is called when constructing a cwise function object, and does the following:
@@ -15136,7 +15136,7 @@ function freqz(b, a, omega) {
 
 module.exports = freqz;
 
-},{"horner":47,"isndarray":50,"ndarray":56,"ndarray-complex":52,"ndarray-fill":53,"ndarray-ops":55,"zeros":59}],55:[function(require,module,exports){
+},{"horner":47,"isndarray":50,"ndarray":56,"ndarray-complex":52,"ndarray-fill":53,"ndarray-ops":55,"zeros":60}],55:[function(require,module,exports){
 "use strict"
 
 var compile = require("cwise-compiler")
@@ -15959,6 +15959,67 @@ module.exports = function(v) {
 },{}],58:[function(require,module,exports){
 "use strict"
 
+var tau = 2.0 * Math.PI
+
+function modf(x) {
+  if(x < 0) {
+    return tau + (x % tau)
+  } else if(x > tau) {
+    return x%tau
+  }
+  return x
+}
+
+function unwrapImpl(data, ptr, stride, n) {
+  var pi = Math.PI
+  var pphase = modf(data[ptr]), shift = 0
+  ptr += stride
+  for(var i=1; i<n; ++i, ptr+=stride) {
+    var cphase = modf(data[ptr])
+    var d = cphase - pphase
+    if(d < -pi) {
+      shift += tau
+    } else if(d > pi) {
+      shift -= tau
+    }
+    data[ptr] = cphase + shift
+    pphase = cphase
+  }
+}
+
+function unwrapImplGetter(data, ptr, stride, n) {
+  var pi = Math.PI
+  var pphase = modf(data.get(ptr)), shift = 0
+  ptr += stride
+  for(var i=1; i<n; ++i, ptr+=stride) {
+    var cphase = modf(data.get(ptr))
+    var d = cphase - pphase
+    if(d < -pi) {
+      shift += tau
+    } else if(d > pi) {
+      shift -= tau
+    }
+    data.set(ptr, cphase + shift)
+    pphase = cphase
+  }
+}
+
+function unwrapPhase(signal) {
+  if(signal.shape.length !== 1) {
+    throw new Error("Invalid shape for signal")
+  }
+  if("generic" === signal.dtype) {
+    unwrapImplGetter(signal.data, signal.offset, signal.stride[0], signal.shape[0])
+  } else {
+    unwrapImpl(signal.data, signal.offset, signal.stride[0], signal.shape[0])
+  }
+  return signal
+}
+
+module.exports = unwrapPhase
+},{}],59:[function(require,module,exports){
+"use strict"
+
 function unique_pred(list, compare) {
   var ptr = 1
     , len = list.length
@@ -16015,7 +16076,7 @@ function unique(list, compare, sorted) {
 
 module.exports = unique
 
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 "use strict"
 
 var ndarray = require("ndarray")
@@ -16061,11 +16122,13 @@ module.exports = function zeros(shape, dtype) {
   return ndarray(new (dtypeToType(dtype))(sz), shape);
 }
 
-},{"ndarray":56}],60:[function(require,module,exports){
+},{"ndarray":56}],61:[function(require,module,exports){
 var cops = require("ndarray-complex");
 var freqz = require('ndarray-freqz');
 var zeros = require("zeros");
 var Chart = require('chart.js');
+
+var unwrap = require('phase-unwrap');
 
 
 // Sample Data
@@ -16122,7 +16185,7 @@ function calculateAndPlot(b,a){
 
   plotResponse({
     id:'phaseChart',
-    data: response.phaseDate,
+    data: response.phaseData,
     title: "Phase Response",
     yLable: 'Phase (rad)',
     xLable: 'Frequency (Hz)'
@@ -16138,6 +16201,8 @@ function calculateResponse(b, a){
   cops.abs(magnitude, fr.H_r, fr.H_i);
   cops.arg(phase, fr.H_r, fr.H_i);
 
+  unwrap(phase);
+
   var magData = [];
   magnitude.data.forEach(function(thisMag, index){
     magData.push({
@@ -16150,13 +16215,13 @@ function calculateResponse(b, a){
   phase.data.forEach(function(thisPhase, index){
     phaseData.push({
       'x': fr.omega.data[index]/Math.PI*44100,
-      'y': 20*Math.log10(thisPhase)
+      'y': thisPhase
     });
   });
 
   return {
     'magData': magData,
-    'phaseDate': phaseData
+    'phaseData': phaseData
   }
 }
 
@@ -16212,4 +16277,4 @@ function plotResponse(options){
   });
 }
 
-},{"chart.js":1,"ndarray-complex":52,"ndarray-freqz":54,"zeros":59}]},{},[60]);
+},{"chart.js":1,"ndarray-complex":52,"ndarray-freqz":54,"phase-unwrap":58,"zeros":60}]},{},[61]);

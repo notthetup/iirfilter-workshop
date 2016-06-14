@@ -4,8 +4,8 @@
   "description": "tools for making iirfilters",
   "main": "script.js",
   "scripts": {
-    "test": "npm run build",
-    "build": "budo script.js:bundle.js --live --open"
+    "test": "budo script.js:bundle.js --live --open",
+    "build": "browserify script.js > bundle.js"
   },
   "repository": {
     "type": "git",
@@ -32,6 +32,7 @@
     "chart.js": "^2.1.5",
     "ndarray-complex": "^1.0.3",
     "ndarray-freqz": "^1.0.0",
+    "phase-unwrap": "^0.1.0",
     "zeros": "^1.0.0"
   }
 }

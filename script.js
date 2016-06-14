@@ -3,6 +3,8 @@ var freqz = require('ndarray-freqz');
 var zeros = require("zeros");
 var Chart = require('chart.js');
 
+var unwrap = require('phase-unwrap');
+
 
 // Sample Data
 var b = [ 0.00685858,  0.00424427,  0.01363637,  0.00939893,  0.01363637, 0.00424427,  0.00685858]
@@ -58,7 +60,7 @@ function calculateAndPlot(b,a){
 
   plotResponse({
     id:'phaseChart',
-    data: response.phaseDate,
+    data: response.phaseData,
     title: "Phase Response",
     yLable: 'Phase (rad)',
     xLable: 'Frequency (Hz)'
@@ -74,6 +76,8 @@ function calculateResponse(b, a){
   cops.abs(magnitude, fr.H_r, fr.H_i);
   cops.arg(phase, fr.H_r, fr.H_i);
 
+  unwrap(phase);
+
   var magData = [];
   magnitude.data.forEach(function(thisMag, index){
     magData.push({
@@ -86,13 +90,13 @@ function calculateResponse(b, a){
   phase.data.forEach(function(thisPhase, index){
     phaseData.push({
       'x': fr.omega.data[index]/Math.PI*44100,
-      'y': 20*Math.log10(thisPhase)
+      'y': thisPhase
     });
   });
 
   return {
     'magData': magData,
-    'phaseDate': phaseData
+    'phaseData': phaseData
   }
 }
 
