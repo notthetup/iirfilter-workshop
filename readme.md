@@ -7,6 +7,7 @@ Tools for Designing (coming soon!) and Analyzing IIR Filters. Since WebAudio add
 
 1. Integrate a Filter Design Tool.
 2. ??
+3. Profit!
 
 ## License
 
