@@ -16266,7 +16266,7 @@ function plotResponse(options){
              labelString: options.xLable
            },
            ticks: {
-               min: 10,
+               min: 20,
                max: 44100
            }
        }]
